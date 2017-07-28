@@ -1,0 +1,85 @@
+#!/bin/bash
+exec 2>/dev/null
+test_folder
+if [[ $? -eq 1 ]]
+   then
+   exit 1
+fi
+#
+# This number is used by the grep command.
+#
+# From: 
+# Manual page grep(1)
+# -A NUM, --after-context=NUM
+#        Print  NUM  lines of trailing context after matching lines.
+#
+A=50
+#
+# Read and write HTML file names to the array
+# 
+ls -f *.HTML  > tmp.txt
+#
+readarray farray < tmp.txt
+#
+# If there is no HTML file in the directory then exit with status 1
+#
+if [ -z $farray ]
+   then
+   echo ""
+   echo "
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                  There is no HTML file in this folder !!!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+   rm -r tmp.txt
+   exit 1
+fi
+#
+rm tmp.txt
+#
+# The cycle runs as many HTML files are in the directory
+#
+e=0
+while [ "z${farray[e]}" != "z" ]
+do
+#
+   cat ${farray[e]} | grep -a "Einzelteil-Informationen mit Grafiken, ohne Barcode" -A$A | awk -F "</*td>|</*tr>" '/<\/*t[rd]>.*[A-Z][A-Z]/ {print $2 }' | cut -d "\"" -f8 > bmp_tmp.txt
+
+   readarray barray < bmp_tmp.txt # Read and write BMP file names to the array
+
+   rm bmp_tmp.txt
+
+   bdb=`echo ${barray[*]} | wc -w`
+   
+   cat ${farray[e]} | grep -a "Einzelteil-Informationen mit Grafiken, ohne Barcode" -A$A | awk -F "</*td>|</*tr>" '/<\/*t[rd]>.*[A-Z][A-Z]/ {print $40 }' | cut -d "m" -f1 | cut -d ">" -f3 > time_tmp.txt
+
+   readarray tarray < time_tmp.txt # Read and write "cutting times" to the array
+
+   rm time_tmp.txt
+#
+   echo "################################################################################"
+   echo ""
+   echo " "${farray[e]} "Times in the current HTML file: " # Times in the current HTML file
+   echo ""
+   echo "--------------------------------------------------------------------------------"
+   echo "                 Part                 |             Time (min)            "
+   echo "--------------------------------------------------------------------------------"
+#   echo ""
+   i=0
+   while [ $i != $bdb ]
+   do
+	bmp=`echo ${barray[i]} | cut -d "." -f1 | rev | cut -d "_" -f2 | rev` # Finds the real name of the part
+	blen=`echo $bmp | wc -c`
+#	echo $blen
+	echo " "$bmp "						"${tarray[i]} # <partname> ---> <time> min
+	echo "--------------------------------------------------------------------------------"
+#	echo " "$bmp "	--->	" ${tarray[i]} "perc (min)" # <partname> ---> <time> min
+#	echo "--------------------------------------------------------------------------------"
+	i=$(( $i + 1 ))
+   done
+   echo ""
+   e=$(( $e + 1 ))
+done
+echo "################################################################################"
+exit 0

@@ -1,14 +1,14 @@
-## ptime
+# ptime
 
 This script collects all the HTML files in the workpiece cutting time.
 
-#### Note
+### Note
 
 Trutops produces html files when the laser NC program is created.
 
 With this small utility, it lists the cut time of each workpiece.
 
-#### Important
+### Important
 
 First check the folder write permission.
 

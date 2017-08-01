@@ -1,10 +1,24 @@
 #!/bin/bash
 exec 2>/dev/null
-test_folder
-if [[ $? -eq 1 ]]
-   then
-   exit 1
-fi
+#
+# Check the working folder write permission
+#
+DIR=$PWD
+INFO=( $(stat -c "%a %U" $DIR) )
+PERM=${INFO[0]}
+OWNER=${INFO[1]}
+case $PERM in
+755)
+        echo ""
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo ""
+        echo " You have no permission to write this folder."
+        echo " Invite the $OWNER to grant permission to this directory."
+        echo ""
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        exit 1
+        ;;
+esac
 #
 # This number is used by the grep command.
 #

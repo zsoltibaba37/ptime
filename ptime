@@ -31,6 +31,8 @@ A=50
 #
 # Read and write HTML file names to the array
 # 
+# readarray farray <<< "$(ls -f *.HTML)"
+# 
 ls -f *.HTML  > tmp.txt
 #
 readarray farray < tmp.txt

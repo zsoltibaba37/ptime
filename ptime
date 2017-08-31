@@ -80,11 +80,8 @@ do
    do
 	bmp=`echo ${barray[i]} | cut -d "." -f1 | rev | cut -d "_" -f2 | rev` # Finds the real name of the part
 	blen=`echo $bmp | wc -c`
-#	echo $blen
-	echo " "$bmp "						"${tarray[i]} # <partname> ---> <time> min
+	echo " "$bmp "						"${tarray[i]} # <partname>	 <time> min
 	echo "--------------------------------------------------------------------------------"
-#	echo " "$bmp "	--->	" ${tarray[i]} "perc (min)" # <partname> ---> <time> min
-#	echo "--------------------------------------------------------------------------------"
 	i=$(( $i + 1 ))
    done
    echo ""
